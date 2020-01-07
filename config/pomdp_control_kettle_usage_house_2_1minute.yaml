@@ -1,0 +1,32 @@
+slotIntervalInSeconds: 60
+
+paramsPrecisionDigits: 15
+beliefSpacePrecisionDigits: 1
+
+dataset: 'eco'
+houseIndex: [2]
+testEvaluationHourIndexBoundaries: [8 9]
+maxNumOfDays: 90
+missingValuesThresholdSM: 0.2
+missingValuesThresholdPlug: 0.2  
+trainingDaysCount: 30
+evaluationDaysCount: 1
+evaluationDayOffset: -9
+
+priorMaxPowerConstraint: 1700
+powerQuantPU: 500
+
+testAppliances: ['Water kettle']
+appliance_ON_powerThreshold: 500
+batteryEnergyQuantPU: 5
+batteryNominalVoltage: 12
+batteryRatedCapacityInAh: 100
+batteryContinuousChargeCurrentMax: 80
+batteryContinuousDischargeCurrentMax: 80
+batteryInternalResistance: 0.006
+batteryModel: '3C'
+batterySelfDischargeRatePerMonth: 0.03
+converterEfficiency: 0.95
+
+p_filtering: 'meanMedian'
+p_filtLength: 4

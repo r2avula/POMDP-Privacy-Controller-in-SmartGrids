@@ -1,0 +1,23 @@
+slotIntervalInSeconds: 60
+
+paramsPrecisionDigits: 15
+
+dataset: 'eco'
+houseIndex: [2]
+testEvaluationHourIndexBoundaries: [8 9]
+maxNumOfDays: 30
+missingValuesThresholdSM: 0.2
+missingValuesThresholdPlug: 0.2  
+trainingDaysCount: 30
+
+testAppliances: ['Water kettle']
+appliance_ON_powerThreshold: [500]
+
+detectionAlgorithm: 'weiss'
+filteringMethod: 'meanMedian'
+filtLength: 3
+plevelMinLength: 1
+maxEventDuration: 10
+eventThreshold: 200
+r: 0.2
+osc: 0.2
