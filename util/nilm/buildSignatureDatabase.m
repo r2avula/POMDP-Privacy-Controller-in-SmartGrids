@@ -1,4 +1,4 @@
-function [sig_database] = buildSignatureDatabase(config, trainingDays)
+function [sig_database] = buildSignatureDatabase(config, trainingDates)
 
 % load parameters of algorithm
 dataset = config.dataset;
@@ -35,8 +35,8 @@ phase = getPhase(houseIndex, applianceID, dataset);
 
 % get real, apparent and reactive (distortive and translative
 % component) power
-power = getPowerNew(path_to_data,testEvaluationHourIndexBoundaries,dataset, houseIndex, trainingDays, slotIntervalInSeconds, phase);
-appliance_consumption = read_plug_dataNew(path_to_data,testEvaluationHourIndexBoundaries,dataset, houseIndex, applianceID, trainingDays, slotIntervalInSeconds);
+power = getPowerNew(path_to_data,testEvaluationHourIndexBoundaries,dataset, houseIndex, trainingDates, slotIntervalInSeconds, phase);
+appliance_consumption = read_plug_dataNew(path_to_data,testEvaluationHourIndexBoundaries,dataset, houseIndex, applianceID, trainingDates, slotIntervalInSeconds);
 
 function_handle = str2func(filteringMethod);
 appliance_consumption_filtered = function_handle(appliance_consumption, filtLength);

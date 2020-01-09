@@ -26,8 +26,17 @@ detectionAlgorithm = config.detectionAlgorithm;
 if(isequal(detectionAlgorithm,'weiss'))
     fileNamePrefix = 'cache/signatureDB_';
     signatureDBParams = struct;
-    signatureDBParams.config = config;
-    signatureDBParams.trainingDates = trainingDates;    
+    signatureDBParams.dataset = config.dataset;
+    signatureDBParams.houseIndex = config.houseIndex;
+    signatureDBParams.slotIntervalInSeconds = config.slotIntervalInSeconds;
+    signatureDBParams.filteringMethod = config.filteringMethod;
+    signatureDBParams.filtLength = config.filtLength;
+    signatureDBParams.plevelMinLength = config.plevelMinLength;
+    signatureDBParams.maxEventDuration = config.maxEventDuration;
+    signatureDBParams.testEvaluationHourIndexBoundaries = (config.testEvaluationHourIndexBoundaries);
+    signatureDBParams.edgeThreshold = config.filtLength;
+    signatureDBParams.testAppliances = config.testAppliances;    
+    signatureDBParams.trainingDates = trainingDates;
     [filename,fileExists] = findFileName(signatureDBParams,fileNamePrefix,'signatureDBParams');
     if(fileExists)
         load(filename,'signature_database');

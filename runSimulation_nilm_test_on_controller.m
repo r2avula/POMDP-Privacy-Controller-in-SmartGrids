@@ -33,13 +33,14 @@ fileNamePrefix = strcat('cache/evaluationData_');
 
 [filename,fileExists] = findFileName(evalCacheParams,fileNamePrefix,'evalCacheParams');
 if fileExists
-    load(filename,'fscore','energyLoss','ambr');
+    load(filename,'fscore','energyLoss','ambr','ambr_adversary');
     disp(strcat({'evaluationData loaded from '},filename,' .'));
 else
     numCases = length(initSoCValues) +1;
     fscore = zeros(evaluationDaysCount,numCases);
     energyLoss = zeros(evaluationDaysCount,numCases);
     ambr = zeros(evaluationDaysCount,numCases);
+    ambr_adversary = zeros(evaluationDaysCount,numCases);
     
     for evalDayIdx = 1:evaluationDaysCount
         evaluationDayOffset = -(evalDayIdx-1);
@@ -56,6 +57,7 @@ else
             fscore(evalDayIdx,caseIdx) = calculate_performance_eventsNew(controller_Params, evaluationData_appliance, recognizedEvents);
             energyLoss(evalDayIdx,caseIdx) = simulatedControllerData.totalEnergyLoss;
             ambr(evalDayIdx,caseIdx) = simulatedControllerData.ambr;
+            ambr_adversary(evalDayIdx,caseIdx) = simulatedControllerData.ambr_adversary;
         end
         %% without controller
         caseIdx = numCases;
@@ -65,10 +67,11 @@ else
         disp(evalDayIdx)
     end
     
-    save(filename,'fscore','energyLoss','ambr','evalCacheParams');
+    save(filename,'fscore','energyLoss','ambr','ambr_adversary','evalCacheParams');
     disp(strcat({'evaluationData saved to '},filename,' .'));
 end
 
 average_fscore = mean(fscore,1);
 average_energyLoss = mean(energyLoss,1);
 average_ambr = mean(ambr,1);
+average_ambr_adversary = mean(ambr_adversary,1); % There is an erronous 7.5 scaling factor in the AMBR results presented in paper

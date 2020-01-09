@@ -41,6 +41,7 @@ d_ks_obs_pu = zeros(numDays,k_num);
 
 totalEnergyLoss = 0;
 ambr = 0;
+ambr_adversary = 0;
 
 for dayIdx = 1:numDays
     soc_kn1 = init_soc;
@@ -59,6 +60,19 @@ for dayIdx = 1:numDays
         belief_kn1_index = (belief_count+1)/2;
     end
     
+    belief_kn1_adversary = P_H_init';
+    belief_norm = sum(belief_kn1_adversary);
+    if belief_norm > 0
+        belief_kn1_adversary = belief_kn1_adversary/belief_norm;
+        belief_kn1_hash = floor(sum(hash_coeffs.*belief_kn1_adversary));
+        belief_kn1_index_adversary = find(belief_space_hash>belief_kn1_hash,1)-1;
+        if(isempty(belief_kn1_index_adversary))
+            belief_kn1_index_adversary = belief_count;
+        end
+    else
+        belief_kn1_index_adversary = (belief_count+1)/2;
+    end    
+    
     for k=1:k_num
         y_k_opt_distribution = P_YgXn1ZK(belief_kn1_index,:,x_kn1,z_kn1_idx,k);
         [y_k_opt_idxs(dayIdx,k)] = round(sum((1:y_num).*y_k_opt_distribution));
@@ -69,6 +83,7 @@ for dayIdx = 1:numDays
         d_ks_obs_pu(dayIdx,k) = y_ks_obs_pu - appliance_consumption_pu(dayIdx,k);
         totalEnergyLoss = totalEnergyLoss + batteryLossEstimator(soc_kn1,d_ks_obs_pu(dayIdx,k)*p_pu,batteryParams);
         
+        temp = zeros(y_num,1);
         for y_k = 1:y_num
             r_k_y_hat = zeros(h_num,1);
             for h_k_hat = 1:h_num
@@ -82,7 +97,26 @@ for dayIdx = 1:numDays
                     end
                 end
             end
+            temp(y_k) = min(r_k_y_hat);
             ambr = ambr + min(r_k_y_hat);
+        end
+                
+        temp = zeros(y_num,1);
+        for y_k = 1:y_num
+            r_k_y_hat = zeros(h_num,1);
+            for h_k_hat = 1:h_num
+                for h_k=1:h_num
+                    for x_kn1=1:x_num
+                        for h_kn1=1:h_num
+                            r_k_y_hat(h_k_hat) = r_k_y_hat(h_k_hat) + cost(h_k,h_k_hat)...
+                                *P_YgXn1ZK(belief_kn1_index_adversary,y_k,x_kn1,z_kn1_idx,k)*P_XgH(x_kn1,h_kn1)*P_Hp1gH(h_k,h_kn1)...
+                                *belief_kn1_adversary(h_kn1);
+                        end
+                    end
+                end
+            end
+            temp(y_k) = min(r_k_y_hat);
+            ambr_adversary = ambr_adversary + min(r_k_y_hat);
         end
         
         belief_k = zeros(h_num,1);
@@ -102,8 +136,27 @@ for dayIdx = 1:numDays
         end
         belief_k =  belief_space(:,belief_k_index);
         
+        belief_k_adversary = zeros(h_num,1);
+        for h_k=1:h_num
+            belief_k_adversary(h_k) = P_XgH(min(y_k_obs_idxs(dayIdx,k),x_num),h_k)*((P_Hp1gH(h_k,:)*belief_kn1_adversary));
+        end
+        belief_norm = sum(belief_k_adversary);
+        if belief_norm > 0
+            belief_k_adversary = belief_k_adversary/belief_norm;
+            belief_k_hash = floor(sum(hash_coeffs.*belief_k_adversary));
+            belief_k_index_adversary = find(belief_space_hash>belief_k_hash,1)-1;
+            if(isempty(belief_k_index_adversary))
+                belief_k_index_adversary = belief_count;
+            end
+        else
+            belief_k_index_adversary = (belief_count+1)/2;
+        end
+        belief_k_adversary =  belief_space(:,belief_k_index_adversary);
+        
         belief_kn1 = belief_k;
-        belief_kn1_index = belief_k_index;
+        belief_kn1_index = belief_k_index;        
+        belief_kn1_adversary = belief_k_adversary;
+        belief_kn1_index_adversary = belief_k_index_adversary;        
         x_kn1 = x_k_idxs(dayIdx,k);
         soc_kn1 = socs(dayIdx,k);
         z_kn1_idx = z_k_idxs(dayIdx,k);
@@ -124,4 +177,5 @@ simulatedControllerData.socs = socs;
 simulatedControllerData.battery_consumption_whole_day = battery_consumption_whole_day;
 simulatedControllerData.totalEnergyLoss = totalEnergyLoss;
 simulatedControllerData.ambr = ambr;
+simulatedControllerData.ambr_adversary = ambr_adversary;
 end
