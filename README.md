@@ -1,4 +1,4 @@
-# POMDP-Privacy-controller-in-SmartGrids
+# POMDP-Privacy-Controller-in-SmartGrids
  
 This package runs on MATLAB and can be used to test the realtime POMDP privacy control of users in Smart Grids. The following publication contains some details about how the package works. Please cite this paper when using the package.
 
